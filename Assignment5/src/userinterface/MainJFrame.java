@@ -4,30 +4,49 @@
  */
 package userinterface;
 
+import Business.Customer.CustomerDirectory;
 import Business.EcoSystem;
 import Business.DB4OUtil.DB4OUtil;
+import Business.DeliveryMan.DeliveryManDirectory;
 
 import Business.Organization;
+import Business.Restaurant.Restaurant;
+import Business.Restaurant.RestaurantDirectory;
 import Business.UserAccount.UserAccount;
+import Business.UserAccount.UserAccountDirectory;
 import java.awt.CardLayout;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import userinterface.CustomerRole.CustomerAreaJPanel;
+import userinterface.CustomerRole.CustomerRestaurantOrder;
+import userinterface.DeliveryManRole.DeliveryManWorkAreaJPanel;
+import userinterface.DeliveryManRole.OrdersDelivery;
+import userinterface.RestaurantAdminRole.AdminWorkAreaJPanel;
+import userinterface.SystemAdminWorkArea.SystemAdminWorkAreaJPanel;
 
 /**
  *
- * @author Lingfeng
+ * @author tharu
  */
 public class MainJFrame extends javax.swing.JFrame {
 
-    /**
+    /** 
      * Creates new form MainJFrame
      */
-    private EcoSystem system;
+    private EcoSystem ecosystem;
     private DB4OUtil dB4OUtil = DB4OUtil.getInstance();
+    UserAccount ua;
+    RestaurantDirectory rd;
 
     public MainJFrame() {
         initComponents();
-        system = dB4OUtil.retrieveSystem();
+        ecosystem = dB4OUtil.retrieveSystem();
+        if(ecosystem == null)
+        {
+            ecosystem = new EcoSystem(new RestaurantDirectory(),new CustomerDirectory(),new DeliveryManDirectory());
+        }
+        
         this.setSize(1680, 1050);
     }
 
@@ -52,6 +71,8 @@ public class MainJFrame extends javax.swing.JFrame {
         container = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(255, 204, 204));
 
         loginJButton.setText("Login");
         loginJButton.addActionListener(new java.awt.event.ActionListener() {
@@ -89,7 +110,7 @@ public class MainJFrame extends javax.swing.JFrame {
                             .addGap(26, 26, 26)
                             .addComponent(loginJLabel)))
                     .addComponent(loginJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(104, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -123,6 +144,70 @@ public class MainJFrame extends javax.swing.JFrame {
 
     private void loginJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginJButtonActionPerformed
         // Get user name
+        String username = userNameJTextField.getText();
+        String password = passwordField.getText();
+        UserAccountDirectory userDirectory = ecosystem.getUserAccountDirectory();
+        if(userDirectory.authenticateUserLogin(username, password))
+        {
+        ArrayList<UserAccount> usersList = userDirectory.getUserAccountList();
+        
+        this.ua = userDirectory.authenticateUser(username, password);
+        if(ua.getRole().toString().equals("Business.Role.SystemAdminRole"))
+        {
+            logoutJButton.setEnabled(true); 
+            userNameJTextField.setEnabled(false);
+            passwordField.setEnabled(false);
+            loginJButton.setEnabled(false);
+            
+            SystemAdminWorkAreaJPanel sa = new SystemAdminWorkAreaJPanel(container, ecosystem);
+            container.add("Sysadmin",sa);
+            CardLayout crdLyt = (CardLayout) container.getLayout();
+            crdLyt.next(container);
+        }
+        
+        else if(ua.getRole().toString().equals("Business.Role.AdminRole"))
+        {
+            logoutJButton.setEnabled(true); 
+            userNameJTextField.setEnabled(false);
+            passwordField.setEnabled(false);
+            loginJButton.setEnabled(false);
+            
+            AdminWorkAreaJPanel aw = new AdminWorkAreaJPanel(container,ua,ecosystem);
+            container.add("RestaurantAdmin",aw);
+            CardLayout crdLyt = (CardLayout) container.getLayout();
+            crdLyt.next(container);
+        }
+        
+        else if(ua.getRole().toString().equals("Business.Role.DeliverManRole"))
+        {
+            logoutJButton.setEnabled(true); 
+            userNameJTextField.setEnabled(false);
+            passwordField.setEnabled(false);
+            loginJButton.setEnabled(false);
+            
+            OrdersDelivery dw = new OrdersDelivery(container, ua, ecosystem);
+            container.add("DeliveryMan",dw);
+            CardLayout crdLyt = (CardLayout) container.getLayout();
+            crdLyt.next(container);
+        }
+        
+        else if(ua.getRole().toString().equals("Business.Role.CustomerRole"))
+        {
+            logoutJButton.setEnabled(true); 
+            userNameJTextField.setEnabled(false);
+            passwordField.setEnabled(false);
+            loginJButton.setEnabled(false);
+            
+            CustomerRestaurantOrder ca = new CustomerRestaurantOrder(container, ua,ecosystem);
+            container.add("Customer",ca);
+            CardLayout crdLyt = (CardLayout) container.getLayout();
+            crdLyt.next(container);
+        }
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "Invalid credentials");
+        }
+      
        
     }//GEN-LAST:event_loginJButtonActionPerformed
 
@@ -140,10 +225,16 @@ public class MainJFrame extends javax.swing.JFrame {
         container.add("blank", blankJP);
         CardLayout crdLyt = (CardLayout) container.getLayout();
         crdLyt.next(container);
-        dB4OUtil.storeSystem(system);
+         dB4OUtil.storeSystem(ecosystem);
     }//GEN-LAST:event_logoutJButtonActionPerformed
 
+    public void logOut(EcoSystem ecosystem)
+    {
+        
+    }
+    
     /**
+     * 
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -181,7 +272,7 @@ public class MainJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel container;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
+    public javax.swing.JPanel jPanel1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JButton loginJButton;
     private javax.swing.JLabel loginJLabel;

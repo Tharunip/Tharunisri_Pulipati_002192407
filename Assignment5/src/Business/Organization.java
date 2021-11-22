@@ -4,7 +4,10 @@
  */
 package Business;
 
+import Business.Customer.CustomerDirectory;
+import Business.DeliveryMan.DeliveryManDirectory;
 import Business.Employee.EmployeeDirectory;
+import Business.Restaurant.RestaurantDirectory;
 import Business.Role.Role;
 import Business.UserAccount.UserAccountDirectory;
 import Business.WorkQueue.WorkQueue;
@@ -12,7 +15,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author raunak
+ * @author tharu
  */
 public abstract class Organization {
 
@@ -20,8 +23,12 @@ public abstract class Organization {
     private WorkQueue workQueue;
     private EmployeeDirectory employeeDirectory;
     private UserAccountDirectory userAccountDirectory;
+    RestaurantDirectory restaurantDirectory;
+    DeliveryManDirectory deliveryManDirectory;
+    CustomerDirectory customerDirectory;
     private int organizationID;
     private static int counter=0;
+    
     
     public enum Type{
         RestaurantAdmin("RestaurantAdmin"),
@@ -46,6 +53,7 @@ public abstract class Organization {
         organizationID = counter;
         ++counter;
     }
+
     public Organization(){
         
     }

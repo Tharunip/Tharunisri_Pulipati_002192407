@@ -11,16 +11,42 @@ import Business.DeliveryMan.DeliveryManDirectory;
 import Business.Restaurant.RestaurantDirectory;
 import Business.Role.Role;
 import Business.Role.SystemAdminRole;
+import Business.UserAccount.UserAccount;
+import Business.UserAccount.UserAccountDirectory;
 import java.util.ArrayList;
 
 /**
  *
- * @author MyPC1
+ * @author tharu
  */
 public class EcoSystem extends Organization{
     
     private static EcoSystem business;
     private RestaurantDirectory restaurantDirectory;
+
+    public RestaurantDirectory getRestaurantDirectory() {
+        return restaurantDirectory;
+    }
+
+    public void setRestaurantDirectory(RestaurantDirectory restaurantDirectory) {
+        this.restaurantDirectory = restaurantDirectory;
+    }
+
+    public CustomerDirectory getCustomerDirectory() {
+        return customerDirectory;
+    }
+
+    public void setCustomerDirectory(CustomerDirectory customerDirectory) {
+        this.customerDirectory = customerDirectory;
+    }
+
+    public DeliveryManDirectory getDeliveryManDirectory() {
+        return deliveryManDirectory;
+    }
+
+    public void setDeliveryManDirectory(DeliveryManDirectory deliveryManDirectory) {
+        this.deliveryManDirectory = deliveryManDirectory;
+    }
     private CustomerDirectory customerDirectory;
     private DeliveryManDirectory deliveryManDirectory;
 
@@ -38,6 +64,8 @@ public class EcoSystem extends Organization{
         return business;
     }
     
+    
+    
     @Override
     public ArrayList<Role> getSupportedRole() {
         ArrayList<Role> roleList=new ArrayList<Role>();
@@ -51,7 +79,15 @@ public class EcoSystem extends Organization{
 
     
     public boolean checkIfUserIsUnique(String userName){
-       //
-       return false;
+        UserAccountDirectory usersList = business.getUserAccountDirectory();
+        ArrayList<UserAccount> userAccounts = usersList.getUserAccountList();
+        
+        for(UserAccount ua : userAccounts)
+        {
+            if(ua.getUsername().equals(userName))
+                return false;
+        }
+        
+       return true;
     }
 }
