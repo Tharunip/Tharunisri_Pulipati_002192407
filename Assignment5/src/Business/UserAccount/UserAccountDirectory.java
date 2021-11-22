@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author raunak
+ * @author tharu
  */
 public class UserAccountDirectory {
     
@@ -32,6 +32,15 @@ public class UserAccountDirectory {
         return null;
     }
     
+    public boolean authenticateUserLogin(String username,String password)
+    {
+        for (UserAccount ua : userAccountList)
+            if (ua.getUsername().equals(username) && ua.getPassword().equals(password)){
+                return true;
+            }
+        return false;
+    }
+    
     public UserAccount createUserAccount(String username, String password, Employee employee, Role role){
         UserAccount userAccount = new UserAccount();
         userAccount.setUsername(username);
@@ -48,5 +57,16 @@ public class UserAccountDirectory {
                 return false;
         }
         return true;
+    }
+
+    public UserAccount getUserAccount(String username) {
+        for(UserAccount ua: userAccountList)
+        {
+            if(ua.getUsername().equals(username))
+            {
+                return ua;
+            }
+        }
+        return null;
     }
 }
